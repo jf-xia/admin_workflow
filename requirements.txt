@@ -8,3 +8,4 @@ requests==2.31.0
 schema==0.7.5
 simplejson==3.19.2
 contextlib2==21.6.0
+mysqlclient==2.2.0

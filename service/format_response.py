@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 
 
-def api_response(code, msg='', data=''):
+def api_response(code=0, msg='', data=''):
     """
     格式化返回
     :param code:

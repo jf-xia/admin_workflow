@@ -82,13 +82,14 @@ function App() {
                   i18nProvider={i18nProvider}
                   resources={[
                     {
-                      name: "1",
+                      name: "request",
                       list: "/entity",
                       create: "/entity/create",
                       edit: "/entity/edit/:id",
                       show: "/entity/show/:id",
                       meta: {
                         canDelete: true,
+                        name: "Entity",
                       },
                     },
                     // {

@@ -75,8 +75,11 @@ def entity_detail(request, entity_id):
         return api_response(status=204)
 
 
-def value_list(request, entity_id):
+def value_list(request, entity_code):
     if request.method == 'GET':
+        entity_id = Entity.objects.get(code=entity_code).id or 0
+        if (entity_id == 0):
+            return HttpResponse(json.dumps({'error': 'entity_code not found'}), status=404)
         values = Value.objects.filter(entity=entity_id)
         paginator = Paginator(values, 10)  # Show 10 values per page
         page = request.GET.get('page') or 1
@@ -88,19 +91,20 @@ def value_list(request, entity_id):
         return api_response(data=model_to_dict(value), status=201)
 
 
-def value_detail(request, entity_id, value_id):
+def value_detail(request, entity_code, value_id):
     value = get_object_or_404(Value, pk=value_id)
     if request.method == 'GET':
         return HttpResponse(json.dumps(value.get_entity_data))
-    elif request.method == 'PUT':
+    elif request.method == 'PATCH':
+        return HttpResponse(json.dumps([1, 2]))
         value_data = request.POST
         for key, val in value_data.items():
             setattr(value, key, val)
         value.save()
-        return api_response(data=model_to_dict(value))
+        return HttpResponse(json.dumps(value.get_entity_data))
     elif request.method == 'DELETE':
-        value.delete()
-        return api_response(status=204)
+        # value.delete()
+        return HttpResponse(json.dumps(value.get_entity_data), status=204)
 
 
 def relation_list(request):

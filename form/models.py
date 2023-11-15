@@ -27,20 +27,27 @@ class Entity(BaseModel):
 
 
 class Value(BaseModel):
-    entity_id = models.ForeignKey(Entity, on_delete=models.CASCADE, null=True)
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE, null=True)
     entity_data = models.JSONField(null=True)
     user_id = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
+    # push Value.id in to entity_data  when get entity_data
+    @property
+    def get_entity_data(self):
+        entity_data = self.entity_data
+        entity_data = {'id': self.id, **entity_data}
+        return entity_data
+
 
 class Relation(BaseModel):
-    pk_entity_id = models.ForeignKey(
+    pk_entity = models.ForeignKey(
         Entity, on_delete=models.CASCADE, related_name='pk_entity')
-    pk_value_id = models.ForeignKey(
+    pk_value = models.ForeignKey(
         Value, on_delete=models.CASCADE, related_name='pk_value')
-    fk_entity_id = models.ForeignKey(
+    fk_entity = models.ForeignKey(
         Entity, on_delete=models.CASCADE, related_name='fk_entity')
-    fk_value_id = models.ForeignKey(
+    fk_value = models.ForeignKey(
         Value, on_delete=models.CASCADE, related_name='fk_value')

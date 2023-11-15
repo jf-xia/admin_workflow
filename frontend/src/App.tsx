@@ -6,6 +6,7 @@ import {
   ErrorComponent,
   ThemedLayoutV2,
   ThemedSiderV2,
+  ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
@@ -17,7 +18,7 @@ import routerBindings, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
 import dataProvider from "@refinedev/simple-rest";
-import { App as AntdApp } from "antd";
+import { ConfigProvider, App as AntdApp } from "antd";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { authProvider } from "./authProvider";
@@ -35,9 +36,17 @@ import {
   CategoryList,
   CategoryShow,
 } from "./pages/categories";
+import {
+  EntityCreate,
+  EntityEdit,
+  EntityList,
+  EntityShow,
+} from "./pages/entity";
 import { ForgotPassword } from "./pages/forgotPassword";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
+
+import { useQuery } from "@tanstack/react-query";
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -48,109 +57,132 @@ function App() {
     getLocale: () => i18n.language,
   };
 
+  // const {isLoading, error, data} = useQuery(["settings"], () => {
+  //   return fetch("http://localhost:7777/api/e/1/").then(res => res.json());
+  // });
+  // if (isLoading) return <span>Loading...</span>;
+  // if (error) {
+  //   console.log(error);
+  //   return <span>An error has occurred...</span>;
+  // }
+  // // console.log(data);
+
   return (
     <BrowserRouter>
-      <GitHubBanner />
-      <RefineKbarProvider>
-        <ColorModeContextProvider>
-          <AntdApp>
-            <DevtoolsProvider>
-              <Refine
-                dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
-                notificationProvider={useNotificationProvider}
-                routerProvider={routerBindings}
-                authProvider={authProvider}
-                i18nProvider={i18nProvider}
-                resources={[
-                  {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
-                    meta: {
-                      canDelete: true,
+      <ConfigProvider>
+        <RefineKbarProvider>
+          <ColorModeContextProvider>
+            <AntdApp>
+              <DevtoolsProvider>
+                <Refine
+                  dataProvider={dataProvider("http://localhost:7777/api/e")}
+                  notificationProvider={useNotificationProvider}
+                  routerProvider={routerBindings}
+                  authProvider={authProvider}
+                  i18nProvider={i18nProvider}
+                  resources={[
+                    {
+                      name: "1",
+                      list: "/entity",
+                      create: "/entity/create",
+                      edit: "/entity/edit/:id",
+                      show: "/entity/show/:id",
+                      meta: {
+                        canDelete: true,
+                      },
                     },
-                  },
-                  {
-                    name: "categories",
-                    list: "/categories",
-                    create: "/categories/create",
-                    edit: "/categories/edit/:id",
-                    show: "/categories/show/:id",
-                    meta: {
-                      canDelete: true,
-                    },
-                  },
-                ]}
-                options={{
-                  syncWithLocation: true,
-                  warnWhenUnsavedChanges: true,
-                  projectId: "UIzHbh-q2OfXq-aYEUkV",
-                }}
-              >
-                <Routes>
-                  <Route
-                    element={
-                      <Authenticated
-                        key="authenticated-inner"
-                        fallback={<CatchAllNavigate to="/login" />}
-                      >
-                        <ThemedLayoutV2
-                          Header={() => <Header sticky />}
-                          Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+                    // {
+                    //   name: "categories",
+                    //   list: "/categories",
+                    //   create: "/categories/create",
+                    //   edit: "/categories/edit/:id",
+                    //   show: "/categories/show/:id",
+                    //   meta: {
+                    //     canDelete: true,
+                    //   },
+                    // },
+                  ]}
+                  options={{
+                    syncWithLocation: true,
+                    warnWhenUnsavedChanges: true,
+                    projectId: "UIzHbh-q2OfXq-aYEUkV",
+                  }}
+                >
+                  <Routes>
+                    <Route
+                      element={
+                        <Authenticated
+                          key="authenticated-inner"
+                          fallback={<CatchAllNavigate to="/login" />}
                         >
-                          <Outlet />
-                        </ThemedLayoutV2>
-                      </Authenticated>
-                    }
-                  >
-                    <Route
-                      index
-                      element={<NavigateToResource resource="blog_posts" />}
-                    />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
+                          <ThemedLayoutV2
+                            Header={() => <Header sticky />}
+                            Sider={(props) => (
+                              <ThemedSiderV2
+                                {...props}
+                                Title={() => <ThemedTitleV2 text="Admin T" />}
+                                fixed
+                              />
+                            )}
+                          >
+                            <Outlet />
+                          </ThemedLayoutV2>
+                        </Authenticated>
+                      }
+                    >
+                      <Route
+                        index
+                        element={<NavigateToResource resource="blog_posts" />}
+                      />
+                      <Route path="/entity">
+                        <Route index element={<EntityList />} />
+                        <Route path="create" element={<EntityCreate />} />
+                        <Route path="edit/:id" element={<EntityEdit />} />
+                        <Route path="show/:id" element={<EntityShow />} />
+                      </Route>
+                      <Route path="/blog-posts">
+                        <Route index element={<BlogPostList />} />
+                        <Route path="create" element={<BlogPostCreate />} />
+                        <Route path="edit/:id" element={<BlogPostEdit />} />
+                        <Route path="show/:id" element={<BlogPostShow />} />
+                      </Route>
+                      <Route path="/categories">
+                        <Route index element={<CategoryList />} />
+                        <Route path="create" element={<CategoryCreate />} />
+                        <Route path="edit/:id" element={<CategoryEdit />} />
+                        <Route path="show/:id" element={<CategoryShow />} />
+                      </Route>
+                      <Route path="*" element={<ErrorComponent />} />
                     </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
-                    </Route>
-                    <Route path="*" element={<ErrorComponent />} />
-                  </Route>
-                  <Route
-                    element={
-                      <Authenticated
-                        key="authenticated-outer"
-                        fallback={<Outlet />}
-                      >
-                        <NavigateToResource />
-                      </Authenticated>
-                    }
-                  >
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
                     <Route
-                      path="/forgot-password"
-                      element={<ForgotPassword />}
-                    />
-                  </Route>
-                </Routes>
+                      element={
+                        <Authenticated
+                          key="authenticated-outer"
+                          fallback={<Outlet />}
+                        >
+                          <NavigateToResource />
+                        </Authenticated>
+                      }
+                    >
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route
+                        path="/forgot-password"
+                        element={<ForgotPassword />}
+                      />
+                    </Route>
+                  </Routes>
 
-                <RefineKbar />
-                <UnsavedChangesNotifier />
-                <DocumentTitleHandler />
-              </Refine>
-              <DevtoolsPanel />
-            </DevtoolsProvider>
-          </AntdApp>
-        </ColorModeContextProvider>
-      </RefineKbarProvider>
+                  <RefineKbar />
+                  <UnsavedChangesNotifier />
+                  <DocumentTitleHandler />
+                </Refine>
+                <DevtoolsPanel />
+              </DevtoolsProvider>
+            </AntdApp>
+          </ColorModeContextProvider>
+        </RefineKbarProvider>
+      </ConfigProvider>
     </BrowserRouter>
   );
 }

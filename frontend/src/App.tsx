@@ -1,4 +1,9 @@
-import { Authenticated, GitHubBanner, Refine } from "@refinedev/core";
+import {
+  Authenticated,
+  GitHubBanner,
+  Refine,
+  ResourceProps,
+} from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
@@ -57,147 +62,146 @@ function App() {
     getLocale: () => i18n.language,
   };
 
-  // const {isLoading, error, data} = useQuery(["settings"], () => {
-  //   return fetch("http://localhost:7777/api/e/1/").then(res => res.json());
-  // });
-  // if (isLoading) return <span>Loading...</span>;
-  // if (error) {
-  //   console.log(error);
-  //   return <span>An error has occurred...</span>;
-  // }
-  // // console.log(data);
+  const { isLoading, error, data } = useQuery(["settings"], () => {
+    return fetch("http://localhost:7777/api/entity").then((res) => res.json());
+  });
+  if (isLoading) return <span>Loading...</span>;
+  if (error) {
+    console.log(error);
+    return <span>An error has occurred...</span>;
+  }
+
+  const resourceData:
+    | ResourceProps[]
+    | {
+        name: string;
+        list: string;
+        create: string;
+        edit: string;
+        show: string;
+        meta: { canDelete: boolean };
+      }[]
+    | undefined = [
+    {
+      name: "entity",
+      list: "/entity",
+      create: "/entity/create",
+      edit: "/entity/edit/:id",
+      show: "/entity/show/:id",
+      meta: {
+        canDelete: true,
+      },
+    },
+  ];
+
+  for (const key in data["data"]) {
+    const code = data["data"][key]["code"];
+    resourceData.push({
+      name: code,
+      list: "/" + code,
+      create: "/" + code + "/create",
+      edit: "/" + code + "/edit/:id",
+      show: "/" + code + "/show/:id",
+      meta: {
+        canDelete: true,
+      },
+    });
+  }
 
   return (
     <BrowserRouter>
       <ConfigProvider>
-        <RefineKbarProvider>
-          <ColorModeContextProvider>
-            <AntdApp>
-              <DevtoolsProvider>
-                <Refine
-                  dataProvider={dataProvider("http://localhost:7777/api/e")}
-                  notificationProvider={useNotificationProvider}
-                  routerProvider={routerBindings}
-                  authProvider={authProvider}
-                  i18nProvider={i18nProvider}
-                  resources={[
-                    {
-                      name: "request",
-                      list: "/request",
-                      create: "/request/create",
-                      edit: "/request/edit/:id",
-                      show: "/request/show/:id",
-                      meta: {
-                        canDelete: true,
-                      },
-                    },
-                    {
-                      name: "entity",
-                      list: "/entity",
-                      create: "/entity/create",
-                      edit: "/entity/edit/:id",
-                      show: "/entity/show/:id",
-                      meta: {
-                        canDelete: true,
-                      },
-                    },
-                    // {
-                    //   name: "categories",
-                    //   list: "/categories",
-                    //   create: "/categories/create",
-                    //   edit: "/categories/edit/:id",
-                    //   show: "/categories/show/:id",
-                    //   meta: {
-                    //     canDelete: true,
-                    //   },
-                    // },
-                  ]}
-                  options={{
-                    syncWithLocation: true,
-                    warnWhenUnsavedChanges: true,
-                    projectId: "UIzHbh-q2OfXq-aYEUkV",
-                  }}
-                >
-                  <Routes>
-                    <Route
-                      element={
-                        <Authenticated
-                          key="authenticated-inner"
-                          fallback={<CatchAllNavigate to="/login" />}
+        {/* <RefineKbarProvider> */}
+        <ColorModeContextProvider>
+          <AntdApp>
+            <DevtoolsProvider>
+              <Refine
+                dataProvider={dataProvider("http://localhost:7777/api/e")}
+                notificationProvider={useNotificationProvider}
+                routerProvider={routerBindings}
+                authProvider={authProvider}
+                i18nProvider={i18nProvider}
+                resources={resourceData}
+                options={{
+                  syncWithLocation: true,
+                  warnWhenUnsavedChanges: true,
+                  projectId: "UIzHbh-q2OfXq-aYEUkV",
+                }}
+              >
+                <Routes>
+                  <Route
+                    element={
+                      <Authenticated
+                        key="authenticated-inner"
+                        fallback={<CatchAllNavigate to="/login" />}
+                      >
+                        <ThemedLayoutV2
+                          Header={() => <Header sticky />}
+                          Sider={(props) => (
+                            <ThemedSiderV2
+                              {...props}
+                              Title={() => <ThemedTitleV2 text="Admin T" />}
+                              fixed
+                            />
+                          )}
                         >
-                          <ThemedLayoutV2
-                            Header={() => <Header sticky />}
-                            Sider={(props) => (
-                              <ThemedSiderV2
-                                {...props}
-                                Title={() => <ThemedTitleV2 text="Admin T" />}
-                                fixed
-                              />
-                            )}
-                          >
-                            <Outlet />
-                          </ThemedLayoutV2>
-                        </Authenticated>
-                      }
-                    >
-                      <Route
-                        index
-                        element={<NavigateToResource resource="request" />}
-                      />
-                      <Route path="/request">
-                        <Route index element={<EntityList />} />
-                        <Route path="create" element={<EntityCreate />} />
-                        <Route path="edit/:id" element={<EntityEdit />} />
-                        <Route path="show/:id" element={<EntityShow />} />
-                      </Route>
-                      <Route path="/entity">
-                        <Route index element={<EntityList />} />
-                        <Route path="create" element={<EntityCreate />} />
-                        <Route path="edit/:id" element={<EntityEdit />} />
-                        <Route path="show/:id" element={<EntityShow />} />
-                      </Route>
-                      <Route path="/blog-posts">
-                        <Route index element={<BlogPostList />} />
-                        <Route path="create" element={<BlogPostCreate />} />
-                        <Route path="edit/:id" element={<BlogPostEdit />} />
-                        <Route path="show/:id" element={<BlogPostShow />} />
-                      </Route>
-                      <Route path="/categories">
-                        <Route index element={<CategoryList />} />
-                        <Route path="create" element={<CategoryCreate />} />
-                        <Route path="edit/:id" element={<CategoryEdit />} />
-                        <Route path="show/:id" element={<CategoryShow />} />
-                      </Route>
-                      <Route path="*" element={<ErrorComponent />} />
-                    </Route>
+                          <Outlet />
+                        </ThemedLayoutV2>
+                      </Authenticated>
+                    }
+                  >
                     <Route
-                      element={
-                        <Authenticated
-                          key="authenticated-outer"
-                          fallback={<Outlet />}
-                        >
-                          <NavigateToResource />
-                        </Authenticated>
-                      }
-                    >
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
-                      <Route
-                        path="/forgot-password"
-                        element={<ForgotPassword />}
-                      />
+                      index
+                      element={<NavigateToResource resource="request" />}
+                    />
+                    <Route path="/entity">
+                      <Route index element={<EntityList />} />
+                      <Route path="create" element={<EntityCreate />} />
+                      <Route path="edit/:id" element={<EntityEdit />} />
+                      <Route path="show/:id" element={<EntityShow />} />
                     </Route>
-                  </Routes>
+                    {data["data"].map((item: any) => {
+                      const code = item.code;
+                      return (
+                        <Route path={`/${code}`}>
+                          <Route index element={<EntityList />} />
+                          <Route path="create" element={<EntityCreate />} />
+                          <Route path="edit/:id" element={<EntityEdit />} />
+                          <Route path="show/:id" element={<EntityShow />} />
+                        </Route>
+                      );
+                    })}
+                    <Route path="*" element={<ErrorComponent />} />
+                  </Route>
+                  <Route
+                    element={
+                      <Authenticated
+                        key="authenticated-outer"
+                        fallback={<Outlet />}
+                      >
+                        <NavigateToResource />
+                      </Authenticated>
+                    }
+                  >
+                    {/* TODO: add login logic */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                      path="/forgot-password"
+                      element={<ForgotPassword />}
+                    />
+                  </Route>
+                </Routes>
 
-                  <RefineKbar />
-                  <UnsavedChangesNotifier />
-                  <DocumentTitleHandler />
-                </Refine>
-                <DevtoolsPanel />
-              </DevtoolsProvider>
-            </AntdApp>
-          </ColorModeContextProvider>
-        </RefineKbarProvider>
+                {/* <RefineKbar /> */}
+                <UnsavedChangesNotifier />
+                <DocumentTitleHandler />
+              </Refine>
+              <DevtoolsPanel />
+            </DevtoolsProvider>
+          </AntdApp>
+        </ColorModeContextProvider>
+        {/* </RefineKbarProvider> */}
       </ConfigProvider>
     </BrowserRouter>
   );

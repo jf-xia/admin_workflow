@@ -16,5 +16,20 @@ i18n
     defaultNS: "common",
     fallbackLng: ["en", "cn"],
   });
+ 
+  console.log("----TODO i18n----");
+  
+  // // TODO add more languages from EAV
+  // i18n.addResourceBundle('en', 'common', {
+  //   entity: {
+  //     name: "Entity",
+  //     fields: {
+  //       id: "ID",
+  //     },
+  //   },
+  // });
+  
 
 export default i18n;
+
+

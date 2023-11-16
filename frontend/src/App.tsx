@@ -83,13 +83,12 @@ function App() {
                   resources={[
                     {
                       name: "request",
-                      list: "/entity",
-                      create: "/entity/create",
-                      edit: "/entity/edit/:id",
-                      show: "/entity/show/:id",
+                      list: "/request",
+                      create: "/request/create",
+                      edit: "/request/edit/:id",
+                      show: "/request/show/:id",
                       meta: {
                         canDelete: true,
-                        name: "Entity",
                       },
                     },
                     // {
@@ -133,9 +132,9 @@ function App() {
                     >
                       <Route
                         index
-                        element={<NavigateToResource resource="blog_posts" />}
+                        element={<NavigateToResource resource="request" />}
                       />
-                      <Route path="/entity">
+                      <Route path="/request">
                         <Route index element={<EntityList />} />
                         <Route path="create" element={<EntityCreate />} />
                         <Route path="edit/:id" element={<EntityEdit />} />

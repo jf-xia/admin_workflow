@@ -1,6 +1,7 @@
 import { AuthBindings } from "@refinedev/core";
 
 export const TOKEN_KEY = "refine-auth";
+export const ENTITY = "admin-entity";
 
 export const authProvider: AuthBindings = {
   login: async ({ username, email, password }) => {
@@ -29,6 +30,8 @@ export const authProvider: AuthBindings = {
   },
   check: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
+    
+    console.log("----TODO check login----"+token);
     if (token) {
       return {
         authenticated: true,

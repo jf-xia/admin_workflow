@@ -77,7 +77,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           <Button type="text">
             <Space>
               <Avatar size={16} src={`/images/flags/${currentLocale}.svg`} />
-              {currentLocale === "en" ? "English" : "German"}
+              {currentLocale === "en" ? "English" : "Chinese"}
               <DownOutlined />
             </Space>
           </Button>

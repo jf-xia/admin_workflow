@@ -91,6 +91,16 @@ function App() {
                         canDelete: true,
                       },
                     },
+                    {
+                      name: "entity",
+                      list: "/entity",
+                      create: "/entity/create",
+                      edit: "/entity/edit/:id",
+                      show: "/entity/show/:id",
+                      meta: {
+                        canDelete: true,
+                      },
+                    },
                     // {
                     //   name: "categories",
                     //   list: "/categories",
@@ -135,6 +145,12 @@ function App() {
                         element={<NavigateToResource resource="request" />}
                       />
                       <Route path="/request">
+                        <Route index element={<EntityList />} />
+                        <Route path="create" element={<EntityCreate />} />
+                        <Route path="edit/:id" element={<EntityEdit />} />
+                        <Route path="show/:id" element={<EntityShow />} />
+                      </Route>
+                      <Route path="/entity">
                         <Route index element={<EntityList />} />
                         <Route path="create" element={<EntityCreate />} />
                         <Route path="edit/:id" element={<EntityEdit />} />

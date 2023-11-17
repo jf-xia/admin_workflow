@@ -13,58 +13,41 @@ import {
   DateField,
 } from "@refinedev/antd";
 import { Table, Space } from "antd";
+import { useLocation } from "react-router-dom";
 
-export const EntityList: React.FC<IResourceComponentsProps> = () => {
+export const EntityList: React.FC<IResourceComponentsProps> = (meta) => {
   const translate = useTranslate();
-  const { tableProps } = useTable({
+  const { tableProps, tableQueryResult } = useTable({
     syncWithLocation: true,
   });
+
+  //get current route using react-router-dom hook
+  console.log(meta);
+
+  const location = useLocation();
+
+  const entityData = JSON.parse(localStorage.getItem("entity") || "{}").filter(
+    (item: any) => "/" + item.code == location.pathname
+  )[0];
+
+  if (entityData.length === 0) {
+    return (
+      <List>
+        <p>No data found</p>
+      </List>
+    );
+  }
 
   return (
     <List>
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title={translate("entity.fields.id")} />
+
         <Table.Column
-          dataIndex="employee_code"
-          title={translate("entity.fields.employee_code")}
-        />
-        <Table.Column
-          dataIndex="employee_category"
-          title={translate("entity.fields.employee_category")}
-        />
-        <Table.Column
-          dataIndex="employee_mode"
-          title={translate("entity.fields.employee_mode")}
-        />
-        <Table.Column
-          dataIndex={["payroll_date"]}
+          dataIndex={"payroll_date"}
           title={translate("entity.fields.payroll_date")}
-          render={(value: any) => <DateField value={value} />}
-        />
-        <Table.Column
-          dataIndex="charging_department"
-          title={translate("entity.fields.charging_department")}
-        />
-        <Table.Column
-          dataIndex="charging_cost_centre"
-          title={translate("entity.fields.charging_cost_centre")}
-        />
-        <Table.Column
-          dataIndex="project_code"
-          title={translate("entity.fields.project_code")}
-        />
-        <Table.Column
-          dataIndex="submitted_by"
-          title={translate("entity.fields.submitted_by")}
-        />
-        <Table.Column
-          dataIndex={["submitted_at"]}
-          title={translate("entity.fields.submitted_at")}
-          render={(value: any) => <DateField value={value} />}
-        />
-        <Table.Column
-          dataIndex="submitted_contact"
-          title={translate("entity.fields.submitted_contact")}
+
+          // render={(value: any) => <DateField value={value} />}
         />
         <Table.Column
           title={translate("table.actions")}

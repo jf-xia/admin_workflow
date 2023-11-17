@@ -7,6 +7,7 @@ export const authProvider: AuthBindings = {
   login: async ({ username, email, password }) => {
     if ((username || email) && password) {
       localStorage.setItem(TOKEN_KEY, username);
+      console.log("----TODO login----"+username);
       return {
         success: true,
         redirectTo: "/",

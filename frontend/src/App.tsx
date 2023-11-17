@@ -30,18 +30,6 @@ import { authProvider } from "./authProvider";
 import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "./pages/blog-posts";
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "./pages/categories";
-import {
   EntityCreate,
   EntityEdit,
   EntityList,
@@ -53,6 +41,8 @@ import { Register } from "./pages/register";
 
 import { useQuery } from "@tanstack/react-query";
 
+const API_URL = "http://localhost:7777/api/";
+
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -63,13 +53,15 @@ function App() {
   };
 
   const { isLoading, error, data } = useQuery(["settings"], () => {
-    return fetch("http://localhost:7777/api/entity").then((res) => res.json());
+    return fetch(API_URL + "entity").then((res) => res.json());
   });
   if (isLoading) return <span>Loading...</span>;
   if (error) {
     console.log(error);
     return <span>An error has occurred...</span>;
   }
+
+  localStorage.setItem("entity", JSON.stringify(data["data"]));
 
   const resourceData:
     | ResourceProps[]
@@ -116,7 +108,7 @@ function App() {
           <AntdApp>
             <DevtoolsProvider>
               <Refine
-                dataProvider={dataProvider("http://localhost:7777/api/e")}
+                dataProvider={dataProvider(API_URL + "e")}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
                 authProvider={authProvider}
@@ -152,10 +144,13 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="request" />}
+                      element={<NavigateToResource resource="entity" />}
                     />
                     <Route path="/entity">
-                      <Route index element={<EntityList />} />
+                      <Route
+                        index
+                        element={<EntityList meta={{ wqe: 23123 }} />}
+                      />
                       <Route path="create" element={<EntityCreate />} />
                       <Route path="edit/:id" element={<EntityEdit />} />
                       <Route path="show/:id" element={<EntityShow />} />

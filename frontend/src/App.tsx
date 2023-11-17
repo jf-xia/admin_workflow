@@ -147,10 +147,7 @@ function App() {
                       element={<NavigateToResource resource="entity" />}
                     />
                     <Route path="/entity">
-                      <Route
-                        index
-                        element={<EntityList meta={{ wqe: 23123 }} />}
-                      />
+                      <Route index element={<EntityList />} />
                       <Route path="create" element={<EntityCreate />} />
                       <Route path="edit/:id" element={<EntityEdit />} />
                       <Route path="show/:id" element={<EntityShow />} />
@@ -159,10 +156,19 @@ function App() {
                       const code = item.code;
                       return (
                         <Route path={`/${code}`}>
-                          <Route index element={<EntityList />} />
-                          <Route path="create" element={<EntityCreate />} />
-                          <Route path="edit/:id" element={<EntityEdit />} />
-                          <Route path="show/:id" element={<EntityShow />} />
+                          <Route index element={<EntityList meta={item} />} />
+                          <Route
+                            path="create"
+                            element={<EntityCreate meta={item} />}
+                          />
+                          <Route
+                            path="edit/:id"
+                            element={<EntityEdit meta={item} />}
+                          />
+                          <Route
+                            path="show/:id"
+                            element={<EntityShow meta={item} />}
+                          />
                         </Route>
                       );
                     })}

@@ -13,42 +13,23 @@ import {
   DateField,
 } from "@refinedev/antd";
 import { Table, Space } from "antd";
-import { useLocation } from "react-router-dom";
 
 export const EntityList: React.FC<IResourceComponentsProps> = (meta) => {
   const translate = useTranslate();
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
-
-  //get current route using react-router-dom hook
-  console.log(meta);
-
-  const location = useLocation();
-
-  const entityData = JSON.parse(localStorage.getItem("entity") || "{}").filter(
-    (item: any) => "/" + item.code == location.pathname
-  )[0];
-
-  if (entityData.length === 0) {
-    return (
-      <List>
-        <p>No data found</p>
-      </List>
-    );
-  }
 
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={translate("entity.fields.id")} />
-
-        <Table.Column
-          dataIndex={"payroll_date"}
-          title={translate("entity.fields.payroll_date")}
-
-          // render={(value: any) => <DateField value={value} />}
-        />
+        {(meta.meta?.attribute || []).map((attribute: any) => (
+          <Table.Column
+            dataIndex={attribute.code}
+            title={attribute.label} // TODO: translate this label using i18n
+            // TODO: render={(value: any) => <DateField value={value} />}
+          />
+        ))}
         <Table.Column
           title={translate("table.actions")}
           dataIndex="actions"
